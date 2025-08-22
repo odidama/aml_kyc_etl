@@ -1,0 +1,70 @@
+api_endpoint_list: ["addresses","officers", "entities"]
+
+db_tables: ["address","countries","persons"]
+
+
+database_queries:
+    create_tables: |
+      CREATE TABLE ADDRESS (
+      ID SERIAL PRIMARY KEY,
+      Address VARCHAR(255), 
+      Address_id INT,
+      Country_Code CHAR(10),
+      Data_Source VARCHAR(100),
+      Icij_id VARCHAR(200),
+      Note VARCHAR(100),
+      Property_Name VARCHAR(255),
+      Schema VARCHAR(250),
+      Valid_Until VARCHAR(255),
+      CONSTRAINT fk_country_code
+      FOREIGN KEY(Country_Code)
+        REFERENCES countries(Country_Code)
+      );
+
+      CREATE TABLE COUNTRIES (
+        ID SERIAL PRIMARY KEY,
+        Name VARCHAR(250),
+        Iso3 VARCHAR(4),
+        Iso2 VARCHAR(3),
+        Capital VARCHAR(200),
+        Currency VARCHAR(150),
+        Currency_name VARCHAR(150),
+        Region VARCHAR(250),
+        Subregion VARCHAR(250),
+        Nationality VARCHAR(250)
+      );
+      
+      CREATE TABLE PERSONS (
+      ID SERIAL PRIMARY KEY,
+      PersonID INT
+      Schema VARCHAR(250),
+      Name VARCHAR(150), 
+      Country_Code CHAR(10),
+      Icij_Id VARCHAR(200),
+      Data_Source VARCHAR(100),
+      Valid_Until VARCHAR(255),
+      CONSTRAINT fk_country_code
+      FOREIGN KEY(Country_Code)
+        REFERENCES countries(Country_Code)
+      );
+      
+      CREATE TABLE ENTITIES (
+      ID SERIAL PRIMARY KEY,
+      Schema VARCHAR(250),
+      Country_Code CHAR(10),
+      Data_Source VARCHAR(100),
+      Jurisdiction VARCHAR(250),
+      Status CHAR(100),
+      Date_Of_Incorporation Date,
+      Data_Of_Dissolution Date,
+      Intermediary_Names VARCHAR(250),
+      Intermediary_Officers VARCHAR(200)
+      CONSTRAINT fk_country_code
+      FOREIGN KEY(Country_Code)
+        REFERENCES countries(Country_Code)
+      );
+
+    write_to_db:
+      df.to_sql(
+      'your_table_name', 
+      con=engine, if_exists='replace', index=False)
